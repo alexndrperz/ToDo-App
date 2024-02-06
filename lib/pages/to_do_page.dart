@@ -1,4 +1,6 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_final_fields, avoid_print
+
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -10,13 +12,13 @@ class ToDoPage extends StatefulWidget {
 }
 
 class _ToDoPageState extends State<ToDoPage> {
-  // Variable
-  int _counter = 0;
+  TextEditingController _controller = TextEditingController();
 
-  //Method
-  void _incrementCount() {
+  String _msg = "";
+
+  void saludar() {
     setState(() {
-      _counter++;
+      _msg = "Hola ${_controller.text}!";
     });
   }
 
@@ -24,20 +26,28 @@ class _ToDoPageState extends State<ToDoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Has clickeado el boton este numero de veces"),
-            Text(
-              _counter.toString(),
-              style: TextStyle(fontSize: 40),
-            )
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                _msg,
+                style: TextStyle(fontSize: 25),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 30, bottom: 20),
+                child: TextField(
+                  controller: _controller,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Ingrese su nombre"),
+                ),
+              ),
+              ElevatedButton(onPressed: saludar, child: Text("Enviar"))
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCount,
-        child: Icon(Icons.add),
       ),
     );
   }
