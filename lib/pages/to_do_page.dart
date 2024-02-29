@@ -13,9 +13,18 @@ class ToDoPage extends StatefulWidget {
   State<ToDoPage> createState() => _ToDoPageState();
 }
 
-class _ToDoPageState extends State<ToDoPage> {
+class _ToDoPageState extends State<ToDoPage> with TickerProviderStateMixin {
   final _hivBox = Hive.box('mainBox');
   AppDatabase _db = AppDatabase();
+
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(milliseconds: 700),
+    vsync: this,
+  );
+  late final Animation<double> _animation = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeIn,
+  );
 
   @override
   void initState() {
@@ -25,6 +34,8 @@ class _ToDoPageState extends State<ToDoPage> {
       _db.loadData();
     }
     super.initState();
+
+    _controller.forward();
   }
 
   final _textController = TextEditingController();
@@ -64,9 +75,15 @@ class _ToDoPageState extends State<ToDoPage> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose(); // Liberar recursos
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color.fromARGB(255, 220, 232, 244),
+        backgroundColor: Color.fromARGB(255, 254, 255, 253),
         appBar: AppBar(
           backgroundColor: Colors.blue[300],
           elevation: 4.0,
@@ -89,16 +106,19 @@ class _ToDoPageState extends State<ToDoPage> {
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 25),
-          child: ListView.builder(
-            itemCount: _db.toDoList.length,
-            itemBuilder: (context, index) {
-              return ToDoItem(
-                itemName: _db.toDoList[index][0],
-                isComplete: _db.toDoList[index][1],
-                toogled: (value) => changeCheck(value, index),
-                delFunction: (context) => deleteTask(index),
-              );
-            },
+          child: FadeTransition(
+            opacity: _animation,
+            child: ListView.builder(
+              itemCount: _db.toDoList.length,
+              itemBuilder: (context, index) {
+                return ToDoItem(
+                  itemName: _db.toDoList[index][0],
+                  isComplete: _db.toDoList[index][1],
+                  toogled: (value) => changeCheck(value, index),
+                  delFunction: (context) => deleteTask(index),
+                );
+              },
+            ),
           ),
         ));
   }
