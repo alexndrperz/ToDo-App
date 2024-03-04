@@ -40,12 +40,17 @@ class _ToDoPageState extends State<ToDoPage> with TickerProviderStateMixin {
 
   final _textController = TextEditingController();
 
+  cleanScreen() {
+    _textController.text = "";
+    Navigator.of(context).pop();
+  }
+
   saveTask() {
     setState(() {
       _db.toDoList.add([_textController.text, false]);
     });
     _db.updateDB();
-    Navigator.of(context).pop();
+    cleanScreen();
   }
 
   void createTask() {
@@ -55,7 +60,7 @@ class _ToDoPageState extends State<ToDoPage> with TickerProviderStateMixin {
           return ModalBox(
             controller: _textController,
             onSave: saveTask,
-            onCancel: () => Navigator.of(context).pop(),
+            onCancel: cleanScreen,
           );
         });
   }
