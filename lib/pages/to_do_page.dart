@@ -16,9 +16,10 @@ class ToDoPage extends StatefulWidget {
 class _ToDoPageState extends State<ToDoPage> with TickerProviderStateMixin {
   final _hivBox = Hive.box('mainBox');
   AppDatabase _db = AppDatabase();
+  bool startAnimation = false;
 
   late final AnimationController _controller = AnimationController(
-    duration: const Duration(milliseconds: 700),
+    duration: const Duration(seconds: 1),
     vsync: this,
   );
   late final Animation<double> _animation = CurvedAnimation(
@@ -36,6 +37,11 @@ class _ToDoPageState extends State<ToDoPage> with TickerProviderStateMixin {
     super.initState();
 
     _controller.forward();
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() {
+        startAnimation = !startAnimation;
+      });
+    });
   }
 
   final _textController = TextEditingController();
@@ -117,6 +123,8 @@ class _ToDoPageState extends State<ToDoPage> with TickerProviderStateMixin {
               itemCount: _db.toDoList.length,
               itemBuilder: (context, index) {
                 return ToDoItem(
+                  startAnimation: startAnimation,
+                  index: index,
                   itemName: _db.toDoList[index][0],
                   isComplete: _db.toDoList[index][1],
                   toogled: (value) => changeCheck(value, index),
